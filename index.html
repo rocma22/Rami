@@ -28,10 +28,11 @@ button.full{width:100%}
 .pl .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl .s{font:700 44px/1.05 Georgia,serif;margin:2px 0}
 .pl .m{font-size:13px;opacity:.8}
-.pl.danger{outline:3px dashed var(--chalk);outline-offset:2px}
+.pl.warn{background:#d9770a;color:#1c1000}
+.pl.danger{background:#c62828;color:#fff;box-shadow:0 0 0 3px #ff8a80 inset}
 .pl.sc{box-shadow:0 0 0 4px #f2c230}
 .pay{font-weight:700;color:var(--red);margin-top:6px}
-.pl.out{background:var(--red)}
+.pl.out{background:#3d3d3d;color:#cfcfcf}
 .pl.win{background:var(--ok);color:#06180f}
 .bar{height:6px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--brass)}
@@ -88,7 +89,8 @@ function gameView(){
     var cls="pl",st="";
     if(S.phase==="done"){if(S.winners.indexOf(i)>-1){cls+=" win";st="Winner"}else{cls+=" out";st="Lost"}}
     else if(S.phase==="tiebreak"&&S.over.indexOf(i)>-1){cls+=" danger";st="Tiebreak"}
-    else if(S.scores[i]>=45){cls+=" danger";st=(LIMIT-S.scores[i])+" to go"}
+    else if(S.scores[i]>=49){cls+=" danger";st="Danger! "+(LIMIT-S.scores[i])+" to go"}
+    else if(S.scores[i]>=45){cls+=" warn";st="Careful, "+(LIMIT-S.scores[i])+" to go"}
     else st=(LIMIT-S.scores[i])+" to go";
     if(S.used&&S.used[i]&&S.phase!=="done")cls+=" sc";
     var pct=Math.min(100,S.scores[i]/LIMIT*100);
