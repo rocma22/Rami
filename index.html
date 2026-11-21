@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rami score</title>
+<style>
+:root{--bg:#e9efe9;--card:#fff;--ink:#14261d;--mute:#5d6f64;--line:#cdd8cf;--felt:#15402f;--chalk:#f4f2ea;--brass:#b8892b;--red:#b83a30;--ok:#1f7a4d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a14;--card:#16281f;--ink:#eef2ec;--mute:#9db0a4;--line:#2a4034;--felt:#0a2a1e;--brass:#d6a84a;--red:#ef6b5e;--ok:#4fc08a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1a14;--card:#16281f;--ink:#eef2ec;--mute:#9db0a4;--line:#2a4034;--felt:#0a2a1e;--brass:#d6a84a;--red:#ef6b5e;--ok:#4fc08a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px}
+h1{font:700 26px/1.1 Georgia,"Times New Roman",serif;margin:8px 0 4px}
+p.sub{color:var(--mute);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+input[type=text],input[type=number]{width:100%;font:inherit;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input:focus-visible,button:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+button{font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px 16px;background:var(--felt);color:var(--chalk);cursor:pointer}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.full{width:100%}
+.row{display:flex;gap:8px;align-items:center}
+.stack>*+*{margin-top:10px}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.pl{background:var(--felt);color:var(--chalk);border-radius:14px;padding:12px 14px;position:relative}
+.pl .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl .s{font:700 44px/1.05 Georgia,serif;margin:2px 0}
+.pl .m{font-size:13px;opacity:.8}
+.pl.danger{outline:3px dashed var(--chalk);outline-offset:2px}
+.pl.sc{box-shadow:0 0 0 4px #f2c230}
+.pay{font-weight:700;color:var(--red);margin-top:6px}
+.pl.out{background:var(--red)}
+.pl.win{background:var(--ok);color:#06180f}
+.bar{height:6px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brass)}
+.who{display:grid;grid-template-columns:1fr 64px 90px;gap:8px;align-items:center}
+.who label.t{display:flex;align-items:center;justify-content:center;gap:4px;font-weight:700}
+.who input[type=radio]{width:22px;height:22px;accent-color:var(--brass)}
+.who .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.hd{color:var(--mute);font-size:13px}
+.note{background:var(--bg);border-left:4px solid var(--brass);padding:10px 12px;border-radius:8px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:6px 4px;text-align:center;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;color:var(--mute)}
+td.t{font-weight:700;color:var(--ok)}
+.scroll{overflow-x:auto}
+.err{color:var(--red);font-size:14px;min-height:20px}
+</style>
+<style>body.view .card.stack,body.view .row{display:none}</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var LIMIT=52,KEY="rami-score-v1";
+var S=load()||{screen:"setup",names:["","","",""]};
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var $=function(id){return document.getElementById(id)};
+var err="";
+
+function render(){
+  var h="";
+  if(S.screen==="setup")h=setupView();else h=gameView();
+  $("app").innerHTML=h;
+}
+function setupView(){
+  var f="";
+  for(var i=0;i<4;i++)f+='<input type="text" id="n'+i+'" maxlength="14" placeholder="Player '+(i+1)+'" value="'+esc(S.names[i])+'" autocomplete="off">';
+  return '<h1>Rami score</h1><p class="sub">One person keeps the score for four players. Reaching '+LIMIT+' points means out; 51 is still safe.</p>'+
+  '<div class="card stack">'+f+'<div class="err" id="err">'+err+'</div><button class="full" onclick="startGame()">Start game</button></div>';
+}
+function startGame(){
+  var names=[];
+  for(var i=0;i<4;i++){var v=$("n"+i).value.trim();names.push(v||("Player "+(i+1)))}
+  S={screen:"game",names:names,scores:[0,0,0,0],outs:[0,0,0,0],used:[false,false,false,false],rounds:[],log:[],phase:"play",over:[],winners:[],losers:[]};
+  err="";hist=[];saveHist();save();render();
+}
+function gameView(){
+  var h='<h1>Rami score</h1>';
+  var over=S.phase==="play"?S.scores.map(function(s,i){return s>=LIMIT?i:-1}).filter(function(i){return i>=0}):[];
+  h+='<div class="board">';
+  for(var i=0;i<4;i++){
+    var cls="pl",st="";
+    if(S.phase==="done"){if(S.winners.indexOf(i)>-1){cls+=" win";st="Winner"}else{cls+=" out";st="Lost"}}
+    else if(S.phase==="tiebreak"&&S.over.indexOf(i)>-1){cls+=" danger";st="Tiebreak"}
+    else if(S.scores[i]>=45){cls+=" danger";st=(LIMIT-S.scores[i])+" to go"}
+    else st=(LIMIT-S.scores[i])+" to go";
+    if(S.used&&S.used[i]&&S.phase!=="done")cls+=" sc";
+    var pct=Math.min(100,S.scores[i]/LIMIT*100);
+    h+='<div class="'+cls+'"><div class="n">'+esc(S.names[i])+'</div><div class="s">'+S.scores[i]+'</div><div class="m">T × '+S.outs[i]+' · '+st+(S.used&&S.used[i]&&S.phase!=="done"?' · 2nd chance used':'')+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  }
+  h+='</div>';
+  if(S.log.length)h+='<div class="note">'+esc(S.log[S.log.length-1])+'</div>';
+  if(S.phase==="play")h+=roundForm();
+  else if(S.phase==="tiebreak")h+=tieView();
+  else h+=doneView();
+  h+=history();
+  h+='<div class="row" style="margin-top:12px"><button class="alt" onclick="undo()" '+(hist.length?"":"disabled")+'>Undo last round</button><button class="alt" onclick="newGame()">'+(sure?"Tap again to erase scores":"New game")+'</button></div>';
+  return h;
+}
+function roundForm(){
+  var h='<div class="card stack"><b>Round '+(S.rounds.length+1)+'</b><div class="who hd"><span>Player</span><span style="text-align:center">T</span><span>Card points</span></div>';
+  for(var i=0;i<4;i++)h+='<div class="who"><span class="nm">'+esc(S.names[i])+'</span><label class="t"><input type="radio" name="t" value="'+i+'" onchange="pickT()" aria-label="'+esc(S.names[i])+' went out"></label><input type="number" inputmode="numeric" min="0" id="p'+i+'" placeholder="0"></div>';
+  h+='<div class="err" id="err">'+err+'</div><button class="full" onclick="addRound()">Add round</button></div>';
+  return h;
+}
+function pickT(){
+  var t=document.querySelector('input[name=t]:checked');if(!t)return;
+  for(var i=0;i<4;i++){var el=$("p"+i);el.disabled=(+t.value===i);if(el.disabled)el.value=""}
+}
+function addRound(){
+  var t=document.querySelector('input[name=t]:checked');
+  if(!t){err="Choose who went out (T).";render();return}
+  var T=+t.value,pts=[0,0,0,0];
+  for(var i=0;i<4;i++){if(i===T)continue;var v=parseInt($("p"+i).value,10);if(isNaN(v)||v<0){err="Enter card points for "+S.names[i]+".";render();return}pts[i]=v}
+  err="";
+  snapshot();
+  for(i=0;i<4;i++)S.scores[i]+=pts[i];
+  S.outs[T]++;
+  S.rounds.push({t:T,pts:pts,after:S.scores.slice()});
+  evaluate();
+  save();render();
+}
+function evaluate(){
+  var over=[],under=[];
+  for(var i=0;i<4;i++)(S.scores[i]>=LIMIT?over:under).push(i);
+  if(over.length===0){S.log.push("Round added.");return}
+  if(over.length===1){
+    var p=over[0],best=0,bi=-1;
+    if(S.used&&S.used[p]){S.phase="done";S.losers=[p];S.winners=under;S.log.push(S.names[p]+" went over "+(LIMIT-1)+" again after the second chance and loses the game.");return}
+    if(!S.used)S.used=[false,false,false,false];
+    S.used[p]=true;
+    under.forEach(function(j){if(S.scores[j]>best||bi<0){best=S.scores[j];bi=j}});
+    S.log.push(S.names[p]+" reached "+S.scores[p]+" and gets a second chance: score reset to "+best+" (highest of the others, "+S.names[bi]+").");
+    S.scores[p]=best;return;
+  }
+  if(over.length===2){
+    S.phase="done";S.losers=over;S.winners=under;
+    S.log.push(S.names[over[0]]+" and "+S.names[over[1]]+" went over "+(LIMIT-1)+" and lose.");return;
+  }
+  S.phase="tiebreak";S.over=over;S.under=under;
+  S.log.push(over.length+" players went over at once. They play one more round: the first to go out wins.");
+}
+function tieView(){
+  var h='<div class="card stack"><b>Tiebreak round</b><span class="hd">Who went out first?</span>';
+  S.over.forEach(function(i){h+='<button class="full" onclick="tieWin('+i+')">'+esc(S.names[i])+' went out (T)</button>'});
+  return h+'</div>';
+}
+function tieWin(i){
+  snapshot();
+  S.outs[i]++;
+  S.winners=S.under.concat([i]);
+  S.losers=[0,1,2,3].filter(function(k){return S.winners.indexOf(k)<0});
+  S.phase="done";
+  S.log.push(S.names[i]+" won the tiebreak and wins with "+S.under.map(function(k){return S.names[k]}).join(", ")+".");
+  S.rounds.push({t:i,pts:[0,0,0,0],after:S.scores.slice(),tie:true});
+  save();render();
+}
+function doneView(){
+  return '<div class="card"><b>Game over</b><div>Winners: '+S.winners.map(function(i){return esc(S.names[i])}).join(" and ")+'</div><div class="hd">Losers: '+S.losers.map(function(i){return esc(S.names[i])}).join(" and ")+'</div>'+S.losers.map(function(i){return '<div class="pay">'+esc(S.names[i])+' pays '+(10/S.losers.length)+' DH</div>'}).join("")+'</div>';
+}
+function history(){
+  if(!S.rounds.length)return "";
+  var h='<div class="card scroll"><b>Rounds</b><table><tr><th></th>'+S.names.map(function(n){return"<th>"+esc(n)+"</th>"}).join("")+"</tr>";
+  S.rounds.forEach(function(r,k){
+    h+="<tr><td>"+(r.tie?"Tie":k+1)+"</td>";
+    for(var i=0;i<4;i++)h+=(r.t===i?'<td class="t">T</td>':"<td>"+r.pts[i]+"</td>");
+    h+="</tr>";
+  });
+  return h+"</table></div>";
+}
+var hist=[],sure=false;
+try{hist=JSON.parse(localStorage.getItem(KEY+"-hist"))||[]}catch(e){hist=[]}
+function saveHist(){try{localStorage.setItem(KEY+"-hist",JSON.stringify(hist))}catch(e){}}
+function snapshot(){hist.push(JSON.stringify(S));if(hist.length>50)hist.shift();saveHist()}
+function undo(){
+  if(!hist.length){return}
+  S=JSON.parse(hist.pop());sure=false;saveHist();save();render();
+}
+function newGame(){
+  if(!sure){sure=true;render();setTimeout(function(){if(sure){sure=false;render()}},4000);return}
+  sure=false;
+  var n=S.names.slice();S={screen:"setup",names:n};hist=[];saveHist();save();render();
+}
+render();
+</script>
+<script>
+(function(){
+// 1) Paste your Firebase web app settings here (Project settings > Your apps).
+var CFG={apiKey:"AIzaSyARxkbowXkqPbsumqeQ1xGoaJ73T8FfBGA",authDomain:"rami-e7558.firebaseapp.com",databaseURL:"https://rami-e7558-default-rtdb.firebaseio.com",projectId:"rami-e7558",appId:"1:1071661927089:web:cba5ead41dc2a2aabdb090"};
+var ok=false,db=null;
+try{if(CFG.apiKey!=="PASTE"&&window.firebase){firebase.initializeApp(CFG);db=firebase.database();ok=true}}catch(e){}
+var q=new URLSearchParams(location.search);
+var viewCode=(q.get("room")||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,8);
+var viewer=!!viewCode,code=null;
+try{code=localStorage.getItem("rami-room")}catch(e){}
+var _save=save,_render=render;
+save=function(){
+  if(viewer)return;
+  _save();
+  if(ok&&code){try{db.ref("rooms/"+code).set(JSON.parse(JSON.stringify(S))).catch(function(){})}catch(e){}}
+};
+render=function(){
+  if(viewer){
+    document.body.classList.add("view");
+    if(!S||S.screen!=="game"){$("app").innerHTML='<h1>Rami score</h1><p class="sub">'+(ok?"Waiting for the scorer\u2026":"Live view is not set up.")+'</p>';return}
+    _render();
+    var m=document.createElement("p");m.className="sub";m.textContent="Live view, read-only";
+    $("app").insertBefore(m,$("app").children[1]);
+    return;
+  }
+  _render();
+  if(S.screen==="game")shareBox();
+};
+function shareBox(){
+  var d=document.createElement("div");d.className="card stack";
+  if(!ok)d.innerHTML='<span class="hd">Live sharing is off. Add your Firebase settings in the file.</span>';
+  else if(!code)d.innerHTML='<button class="full" id="shb">Share live with players</button>';
+  else d.innerHTML='<span class="hd">Players open this link:</span><input type="text" readonly id="shu" value="'+location.origin+location.pathname+'?room='+code+'">';
+  $("app").insertBefore(d,$("app").children[1]);
+  var b=$("shb");
+  if(b)b.onclick=function(){code=Math.random().toString(36).slice(2,8);try{localStorage.setItem("rami-room",code)}catch(e){}save();render()};
+  var u=$("shu");if(u)u.onclick=function(){u.select()};
+}
+if(viewer){
+  S={screen:"wait"};
+  if(ok)db.ref("rooms/"+viewCode).on("value",function(s){
+    var v=s.val();
+    if(!v||v.screen!=="game"){S={screen:"wait"};render();return}
+    v.rounds=(v.rounds||[]).map(function(r){return{t:+r.t,pts:(r.pts||[0,0,0,0]).map(Number),tie:!!r.tie}});
+    v.log=(v.log||[]).map(String);v.over=(v.over||[]).map(Number);v.under=(v.under||[]).map(Number);
+    v.winners=(v.winners||[]).map(Number);v.losers=(v.losers||[]).map(Number);
+    v.scores=(v.scores||[0,0,0,0]).map(Number);v.outs=(v.outs||[0,0,0,0]).map(Number);
+    v.used=(v.used||[false,false,false,false]).map(Boolean);
+    v.names=(v.names||[]).map(String);
+    S=v;render();
+  });
+}
+render();
+})();
+</script>
+</body>
+</html>
