@@ -28,12 +28,27 @@ button.full{width:100%}
 .pl .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl .s{font:700 44px/1.05 Georgia,serif;margin:2px 0}
 .pl .m{font-size:13px;opacity:.8}
-.pl.warn{background:#d9770a;color:#1c1000}
-.pl.danger{background:#c62828;color:#fff;box-shadow:0 0 0 3px #ff8a80 inset}
+.pl.warn{background:#ffb74d;color:#2b1500}
+.pl.warn .bar{background:rgba(43,21,0,.22)}
+.pl.warn .bar i{background:#2b1500}
+.pl.warn .m,.pl.danger .m{opacity:1;font-weight:600}
+.pl.danger{background:#b71c1c;color:#fff;box-shadow:0 0 0 3px #ff8a80 inset}
+.pl.danger .bar{background:rgba(255,255,255,.3)}
+.pl.danger .bar i{background:#fff}
 .pl.sc{box-shadow:0 0 0 4px #f2c230}
 .pay{font-weight:700;color:var(--red);margin-top:6px}
-.pl.out{background:#3d3d3d;color:#cfcfcf}
-.pl.win{background:var(--ok);color:#06180f}
+.pl.out{background:#fde2e0;color:#7a1c15}
+.pl.out .bar{background:rgba(122,28,21,.2)}
+.pl.out .bar i{background:#7a1c15}
+.pl.out .m{opacity:1;font-weight:600}
+.pl.win{background:#d8f2e3;color:#0b3d24}
+.pl.win .bar{background:rgba(11,61,36,.2)}
+.pl.win .bar i{background:#0b3d24}
+.pl.win .m{opacity:1;font-weight:600}
+.res{padding:10px 12px;border-radius:10px;margin-top:8px}
+.res.win{background:#d8f2e3;color:#0b3d24}
+.res.lose{background:#fde2e0;color:#7a1c15;border:1px solid #f3a9a3}
+.res.lose .pay{color:#7a1c15;margin-top:6px}
 .bar{height:6px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--brass)}
 .who{display:grid;grid-template-columns:1fr 64px 90px;gap:8px;align-items:center}
@@ -164,7 +179,8 @@ function tieWin(i){
   save();render();
 }
 function doneView(){
-  return '<div class="card"><b>Game over</b><div>Winners: '+S.winners.map(function(i){return esc(S.names[i])}).join(" and ")+'</div><div class="hd">Losers: '+S.losers.map(function(i){return esc(S.names[i])}).join(" and ")+'</div>'+S.losers.map(function(i){return '<div class="pay">'+esc(S.names[i])+' pays '+(10/S.losers.length)+' DH</div>'}).join("")+'</div>';
+  var nm=function(i){return esc(S.names[i])};
+  return '<div class="card"><b>Game over</b><div class="res win">Winners: '+S.winners.map(nm).join(" and ")+'</div><div class="res lose"><b>'+(S.losers.length>1?"Losers":"Loser")+': '+S.losers.map(nm).join(" and ")+'</b>'+S.losers.map(function(i){return '<div class="pay">'+nm(i)+' pays '+(10/S.losers.length)+' DH</div>'}).join("")+'</div></div>';
 }
 function history(){
   if(!S.rounds.length)return "";
