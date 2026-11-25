@@ -63,6 +63,10 @@ th:first-child,td:first-child{text-align:left;color:var(--mute)}
 td.t{font-weight:700;color:var(--ok)}
 .scroll{overflow-x:auto}
 .err{color:var(--red);font-size:14px;min-height:20px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:56px;padding:10px;background:transparent;color:var(--ink);border:1px solid var(--line)}
+.seg button.on{background:var(--felt);color:var(--chalk)}
+.board.n3 .pl:last-child{grid-column:1/-1}
 .lang{max-width:520px;margin:0 auto;padding:12px 16px 0;display:flex;gap:6px;justify-content:flex-end}
 .lang button{padding:6px 12px;font-size:14px;background:transparent;color:var(--ink);border:1px solid var(--line)}
 .lang button.on{background:var(--felt);color:var(--chalk)}
@@ -83,11 +87,11 @@ var S;
 var LANGS={en:"EN",fr:"FR",ar:"دارجة"};
 var I={
 en:{title:"Rami score",intro:"One person keeps the score for four players. Reaching {0} points means out; {1} is still safe.",player:"Player",start:"Start game",togo:"{0} to go",careful:"Careful, {0} to go",danger:"Danger! {0} to go",tiebreak:"Tiebreak",winner:"Winner",lost:"Lost",sc:"2nd chance used",round:"Round {0}",colplayer:"Player",colpts:"Card points",wentout:"{0} went out",addround:"Add round",errT:"Choose who went out (T).",errPts:"Enter card points for {0}.",tietitle:"Tiebreak round",tieq:"Who went out first?",tiebtn:"{0} went out (T)",gameover:"Game over",winners:"Winners",loser:"Loser",losers:"Losers",and:" and ",pays:"{0} pays {1} DH",rounds:"Rounds",tie:"Tie",undo:"Undo last round",newgame:"New game",sure:"Tap again to erase scores",share:"Share live with players",shareoff:"Live sharing is off. Add your Firebase settings in the file.",sharehint:"Players open this link:",waiting:"Waiting for the scorer…",notset:"Live view is not set up.",liveview:"Live view, read-only",
-logRound:"Round added.",logAgain:"{0} went over 51 again after the second chance and loses the game.",logSecond:"{0} reached {1} and gets a second chance: score reset to {2} (highest of the others, {3}).",logTwo:"{0} and {1} went over 51 and lose.",logThree:"{0} players went over at once. They play one more round: the first to go out wins.",logTie:"{0} won the tiebreak and wins with {1}."},
+players:"Number of players",limitlabel:"Points limit",custom:"Custom",customph:"Enter points (10-999)",errLimit:"Enter a whole number between 10 and 999.",logRound:"Round added.",logAgain:"{0} went over {1} again after the second chance and loses the game.",logSecond:"{0} reached {1} and gets a second chance: score reset to {2} (highest of the others, {3}).",logTwo:"{0} and {1} went over {2} and lose.",logThree:"{0} players went over at once. They play one more round: the first to go out wins.",logTie:"{0} won the tiebreak and wins with {1}."},
 fr:{title:"Score Rami",intro:"Une seule personne compte les points des quatre joueurs. À {0} points, le joueur est éliminé ; {1} est encore sauf.",player:"Joueur",start:"Commencer la partie",togo:"encore {0}",careful:"Attention, encore {0}",danger:"Danger ! encore {0}",tiebreak:"Départage",winner:"Gagnant",lost:"Perdu",sc:"2e chance utilisée",round:"Manche {0}",colplayer:"Joueur",colpts:"Points des cartes",wentout:"{0} a fini",addround:"Ajouter la manche",errT:"Choisis qui a fini (T).",errPts:"Entre les points de {0}.",tietitle:"Manche de départage",tieq:"Qui a fini en premier ?",tiebtn:"{0} a fini (T)",gameover:"Partie terminée",winners:"Gagnants",loser:"Perdant",losers:"Perdants",and:" et ",pays:"{0} paie {1} DH",rounds:"Manches",tie:"Dép.",undo:"Annuler la dernière manche",newgame:"Nouvelle partie",sure:"Appuie encore pour effacer",share:"Partager en direct",shareoff:"Le partage en direct est désactivé. Ajoute tes réglages Firebase dans le fichier.",sharehint:"Les joueurs ouvrent ce lien :",waiting:"En attente de celui qui compte…",notset:"La vue en direct n’est pas configurée.",liveview:"Vue en direct, lecture seule",
-logRound:"Manche ajoutée.",logAgain:"{0} a dépassé 51 après sa seconde chance et perd la partie.",logSecond:"{0} a atteint {1} et obtient une seconde chance : son score passe à {2} (le plus haut des autres, {3}).",logTwo:"{0} et {1} ont dépassé 51 et perdent.",logThree:"{0} joueurs ont dépassé la limite en même temps. Ils jouent une manche de plus : le premier qui finit gagne.",logTie:"{0} gagne le départage et gagne avec {1}."},
+players:"Nombre de joueurs",limitlabel:"Limite de points",custom:"Autre",customph:"Entre les points (10-999)",errLimit:"Entre un nombre entier entre 10 et 999.",logRound:"Manche ajoutée.",logAgain:"{0} a dépassé {1} après sa seconde chance et perd la partie.",logSecond:"{0} a atteint {1} et obtient une seconde chance : son score passe à {2} (le plus haut des autres, {3}).",logTwo:"{0} et {1} ont dépassé {2} et perdent.",logThree:"{0} joueurs ont dépassé la limite en même temps. Ils jouent une manche de plus : le premier qui finit gagne.",logTie:"{0} gagne le départage et gagne avec {1}."},
 ar:{title:"نقاط الرامي",intro:"واحد كيحسب النقاط ديال اللاعبين الأربعة. اللي كيوصل {0} نقطة كيخرج، و{1} باقي فاللعبة.",player:"لاعب",start:"بدا اللعبة",togo:"باقي {0}",careful:"حذر، باقي {0}",danger:"خطر! باقي {0}",tiebreak:"الحسم",winner:"رابح",lost:"خاسر",sc:"دازت الفرصة الثانية",round:"الدور {0}",colplayer:"اللاعب",colpts:"نقاط الكارطات",wentout:"{0} سلّى",addround:"زيد الدور",errT:"اختار شكون سلّى (T).",errPts:"دخل نقاط {0}.",tietitle:"دور الحسم",tieq:"شكون سلّى الأول؟",tiebtn:"{0} سلّى (T)",gameover:"سالات اللعبة",winners:"الرابحين",loser:"الخاسر",losers:"الخاسرين",and:" و ",pays:"{0} خاصو يخلص {1} درهم",rounds:"الأدوار",tie:"حسم",undo:"رجع الدور الأخير",newgame:"لعبة جديدة",sure:"ضغط مرة أخرى باش تمسح النقاط",share:"بارطاجي النقاط مع اللاعبين",shareoff:"المشاركة المباشرة موقفة. زيد إعدادات Firebase فالملف.",sharehint:"اللاعبين يفتحو هاد الرابط:",waiting:"كنتسناو اللي كيحسب النقاط…",notset:"المشاهدة المباشرة ما مفعلاش.",liveview:"مشاهدة مباشرة، للقراءة فقط",
-logRound:"تزاد الدور.",logAgain:"{0} فات 51 مرة أخرى من بعد الفرصة الثانية وخسر اللعبة.",logSecond:"{0} وصل {1} وعطيناه فرصة ثانية: نقاطو رجعو {2} (أعلى نقطة عند الآخرين، {3}).",logTwo:"{0} و{1} فاتو 51 وخسرو.",logThree:"{0} د اللاعبين فاتو الحد فنفس الوقت. غادي يلعبو دور زايد: اللي سلّى الأول كيربح.",logTie:"{0} ربح الحسم وربح مع {1}."}
+players:"شحال د اللاعبين",limitlabel:"الحد د النقاط",custom:"حدد نتا",customph:"دخل النقاط (10-999)",errLimit:"دخل رقم صحيح بين 10 و999.",logRound:"تزاد الدور.",logAgain:"{0} فات {1} مرة أخرى من بعد الفرصة الثانية وخسر اللعبة.",logSecond:"{0} وصل {1} وعطيناه فرصة ثانية: نقاطو رجعو {2} (أعلى نقطة عند الآخرين، {3}).",logTwo:"{0} و{1} فاتو {2} وخسرو.",logThree:"{0} د اللاعبين فاتو الحد فنفس الوقت. غادي يلعبو دور زايد: اللي سلّى الأول كيربح.",logTie:"{0} ربح الحسم وربح مع {1}."}
 };
 var lang="";
 try{lang=localStorage.getItem("rami-lang")||""}catch(e){}
@@ -103,7 +107,9 @@ function applyLang(){
 function setLang(l){lang=l;try{localStorage.setItem("rami-lang",l)}catch(e){}applyLang();render()}
 applyLang();
 
-var S=load()||{screen:"setup",names:["","","",""]};
+var S=load()||{screen:"setup",names:["","","",""],n:4,limit:52,custom:false};
+if(S.limit&&S.screen!=="setup")LIMIT=S.limit;
+function Z(n,v){var a=[];for(var i=0;i<n;i++)a.push(v);return a}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -115,28 +121,44 @@ function render(){
   if(S.screen==="setup")h=setupView();else h=gameView();
   $("app").innerHTML=h;
 }
+function grabNames(){
+  for(var i=0;i<4;i++){var e=$("n"+i);if(e)S.names[i]=e.value}
+  var c=$("cl");if(c&&S.custom){var v=parseInt(c.value,10);S.limit=isNaN(v)?"":v}
+}
+function setN(n){grabNames();err="";S.n=n;save();render()}
+function setLim(v){grabNames();err="";S.limit=v;S.custom=false;save();render()}
+function setCustom(){grabNames();err="";S.custom=true;if([52,72,102].indexOf(S.limit)>-1)S.limit="";save();render()}
 function setupView(){
-  var f="";
-  for(var i=0;i<4;i++)f+='<input type="text" id="n'+i+'" maxlength="14" placeholder="'+t("player")+' '+(i+1)+'" value="'+esc(S.names[i])+'" autocomplete="off">';
-  return '<h1>'+t("title")+'</h1><p class="sub">'+t("intro",LIMIT,LIMIT-1)+'</p>'+
-  '<div class="card stack">'+f+'<div class="err" id="err">'+err+'</div><button class="full" onclick="startGame()">'+t("start")+'</button></div>';
+  var n=S.n||4,lim=S.limit,f="",nb="",lb="";
+  for(var k=2;k<=4;k++)nb+='<button class="'+(k===n?"on":"")+'" onclick="setN('+k+')">'+k+'</button>';
+  [52,72,102].forEach(function(v){lb+='<button class="'+(!S.custom&&lim===v?"on":"")+'" onclick="setLim('+v+')">'+v+'</button>'});
+  lb+='<button class="'+(S.custom?"on":"")+'" onclick="setCustom()">'+t("custom")+'</button>';
+  for(var i=0;i<n;i++)f+='<input type="text" id="n'+i+'" maxlength="14" placeholder="'+t("player")+' '+(i+1)+'" value="'+esc(S.names[i]||"")+'" autocomplete="off">';
+  var cu=S.custom?'<input type="number" inputmode="numeric" id="cl" min="10" max="999" placeholder="'+t("customph")+'" value="'+esc(lim===""||lim==null?"":lim)+'">':'';
+  return '<h1>'+t("title")+'</h1><p class="sub">'+t("intro",lim||52,(lim||52)-1)+'</p>'+
+  '<div class="card stack"><b>'+t("players")+'</b><div class="seg">'+nb+'</div><b>'+t("limitlabel")+'</b><div class="seg">'+lb+'</div>'+cu+f+'<div class="err" id="err">'+err+'</div><button class="full" onclick="startGame()">'+t("start")+'</button></div>';
 }
 function startGame(){
+  grabNames();
+  var n=S.n||4,lim=parseInt(S.limit,10);
+  if(isNaN(lim)||lim<10||lim>999){err=t("errLimit");render();return}
   var names=[];
-  for(var i=0;i<4;i++){var v=$("n"+i).value.trim();names.push(v||(t("player")+" "+(i+1)))}
-  S={screen:"game",names:names,scores:[0,0,0,0],outs:[0,0,0,0],used:[false,false,false,false],rounds:[],log:[],phase:"play",over:[],winners:[],losers:[]};
+  for(var i=0;i<n;i++){var v=(S.names[i]||"").trim();names.push(v||(t("player")+" "+(i+1)))}
+  LIMIT=lim;
+  S={screen:"game",names:names,limit:lim,custom:!!S.custom,scores:Z(n,0),outs:Z(n,0),used:Z(n,false),rounds:[],log:[],phase:"play",over:[],winners:[],losers:[]};
   err="";hist=[];saveHist();save();render();
 }
 function gameView(){
   var h='<h1>'+t("title")+'</h1>';
   var over=S.phase==="play"?S.scores.map(function(s,i){return s>=LIMIT?i:-1}).filter(function(i){return i>=0}):[];
-  h+='<div class="board">';
-  for(var i=0;i<4;i++){
+  h+='<div class="board n'+S.names.length+'">';
+  var dz=Math.max(2,Math.round(LIMIT*.06)),wz=Math.max(4,Math.round(LIMIT*.135));
+  for(var i=0;i<S.names.length;i++){
     var cls="pl",st="";
     if(S.phase==="done"){if(S.winners.indexOf(i)>-1){cls+=" win";st=t("winner")}else{cls+=" out";st=t("lost")}}
     else if(S.phase==="tiebreak"&&S.over.indexOf(i)>-1){cls+=" danger";st=t("tiebreak")}
-    else if(S.scores[i]>=49){cls+=" danger";st=t("danger",LIMIT-S.scores[i])}
-    else if(S.scores[i]>=45){cls+=" warn";st=t("careful",LIMIT-S.scores[i])}
+    else if(LIMIT-S.scores[i]<=dz){cls+=" danger";st=t("danger",LIMIT-S.scores[i])}
+    else if(LIMIT-S.scores[i]<=wz){cls+=" warn";st=t("careful",LIMIT-S.scores[i])}
     else st=t("togo",LIMIT-S.scores[i]);
     if(S.used&&S.used[i]&&S.phase!=="done")cls+=" sc";
     var pct=Math.min(100,S.scores[i]/LIMIT*100);
@@ -153,22 +175,22 @@ function gameView(){
 }
 function roundForm(){
   var h='<div class="card stack"><b>'+t("round",S.rounds.length+1)+'</b><div class="who hd"><span>'+t("colplayer")+'</span><span style="text-align:center">T</span><span>'+t("colpts")+'</span></div>';
-  for(var i=0;i<4;i++)h+='<div class="who"><span class="nm">'+esc(S.names[i])+'</span><label class="t"><input type="radio" name="t" value="'+i+'" onchange="pickT()" aria-label="'+esc(t("wentout",S.names[i]))+'"></label><input type="number" inputmode="numeric" min="0" id="p'+i+'" placeholder="0"></div>';
+  for(var i=0;i<S.names.length;i++)h+='<div class="who"><span class="nm">'+esc(S.names[i])+'</span><label class="t"><input type="radio" name="t" value="'+i+'" onchange="pickT()" aria-label="'+esc(t("wentout",S.names[i]))+'"></label><input type="number" inputmode="numeric" min="0" id="p'+i+'" placeholder="0"></div>';
   h+='<div class="err" id="err">'+err+'</div><button class="full" onclick="addRound()">'+t("addround")+'</button></div>';
   return h;
 }
 function pickT(){
-  var t=document.querySelector('input[name=t]:checked');if(!t)return;
-  for(var i=0;i<4;i++){var el=$("p"+i);el.disabled=(+t.value===i);if(el.disabled)el.value=""}
+  var tr=document.querySelector('input[name=t]:checked');if(!tr)return;
+  for(var i=0;i<S.names.length;i++){var el=$("p"+i);el.disabled=(+tr.value===i);if(el.disabled)el.value=""}
 }
 function addRound(){
-  var t=document.querySelector('input[name=t]:checked');
-  if(!t){err=t("errT");render();return}
-  var T=+t.value,pts=[0,0,0,0];
-  for(var i=0;i<4;i++){if(i===T)continue;var v=parseInt($("p"+i).value,10);if(isNaN(v)||v<0){err=t("errPts",S.names[i]);render();return}pts[i]=v}
+  var tr=document.querySelector('input[name=t]:checked'),n=S.names.length;
+  if(!tr){err=t("errT");render();return}
+  var T=+tr.value,pts=Z(n,0);
+  for(var i=0;i<n;i++){if(i===T)continue;var v=parseInt($("p"+i).value,10);if(isNaN(v)||v<0){err=t("errPts",S.names[i]);render();return}pts[i]=v}
   err="";
   snapshot();
-  for(i=0;i<4;i++)S.scores[i]+=pts[i];
+  for(i=0;i<n;i++)S.scores[i]+=pts[i];
   S.outs[T]++;
   S.rounds.push({t:T,pts:pts,after:S.scores.slice()});
   evaluate();
@@ -176,12 +198,12 @@ function addRound(){
 }
 function evaluate(){
   var over=[],under=[];
-  for(var i=0;i<4;i++)(S.scores[i]>=LIMIT?over:under).push(i);
+  for(var i=0;i<S.names.length;i++)(S.scores[i]>=LIMIT?over:under).push(i);
   if(over.length===0){logk("logRound");return}
   if(over.length===1){
     var p=over[0],best=0,bi=-1;
-    if(S.used&&S.used[p]){S.phase="done";S.losers=[p];S.winners=under;logk("logAgain",S.names[p]);return}
-    if(!S.used)S.used=[false,false,false,false];
+    if(S.used&&S.used[p]){S.phase="done";S.losers=[p];S.winners=under;logk("logAgain",S.names[p],LIMIT-1);return}
+    if(!S.used)S.used=Z(S.names.length,false);
     S.used[p]=true;
     under.forEach(function(j){if(S.scores[j]>best||bi<0){best=S.scores[j];bi=j}});
     logk("logSecond",S.names[p],S.scores[p],best,S.names[bi]);
@@ -189,7 +211,7 @@ function evaluate(){
   }
   if(over.length===2){
     S.phase="done";S.losers=over;S.winners=under;
-    logk("logTwo",S.names[over[0]],S.names[over[1]]);return;
+    logk("logTwo",S.names[over[0]],S.names[over[1]],LIMIT-1);return;
   }
   S.phase="tiebreak";S.over=over;S.under=under;
   logk("logThree",over.length);
@@ -203,22 +225,22 @@ function tieWin(i){
   snapshot();
   S.outs[i]++;
   S.winners=S.under.concat([i]);
-  S.losers=[0,1,2,3].filter(function(k){return S.winners.indexOf(k)<0});
+  S.losers=S.names.map(function(x,k){return k}).filter(function(k){return S.winners.indexOf(k)<0});
   S.phase="done";
   logk("logTie",S.names[i],S.under.map(function(k){return S.names[k]}).join(", "));
-  S.rounds.push({t:i,pts:[0,0,0,0],after:S.scores.slice(),tie:true});
+  S.rounds.push({t:i,pts:Z(S.names.length,0),after:S.scores.slice(),tie:true});
   save();render();
 }
 function doneView(){
   var nm=function(i){return esc(S.names[i])},sep=t("and");
-  return '<div class="card"><b>'+t("gameover")+'</b><div class="res win">'+t("winners")+': '+S.winners.map(nm).join(sep)+'</div><div class="res lose"><b>'+(S.losers.length>1?t("losers"):t("loser"))+': '+S.losers.map(nm).join(sep)+'</b>'+S.losers.map(function(i){return '<div class="pay">'+esc(t("pays",S.names[i],10/S.losers.length))+'</div>'}).join("")+'</div></div>';
+  return '<div class="card"><b>'+t("gameover")+'</b><div class="res win">'+(S.winners.length>1?t("winners"):t("winner"))+': '+S.winners.map(nm).join(sep)+'</div><div class="res lose"><b>'+(S.losers.length>1?t("losers"):t("loser"))+': '+S.losers.map(nm).join(sep)+'</b>'+S.losers.map(function(i){return '<div class="pay">'+esc(t("pays",S.names[i],10/S.losers.length))+'</div>'}).join("")+'</div></div>';
 }
 function history(){
   if(!S.rounds.length)return "";
   var h='<div class="card scroll"><b>'+t("rounds")+'</b><table><tr><th></th>'+S.names.map(function(n){return"<th>"+esc(n)+"</th>"}).join("")+"</tr>";
   S.rounds.forEach(function(r,k){
     h+="<tr><td>"+(r.tie?t("tie"):k+1)+"</td>";
-    for(var i=0;i<4;i++)h+=(r.t===i?'<td class="t">T</td>':"<td>"+r.pts[i]+"</td>");
+    for(var i=0;i<S.names.length;i++)h+=(r.t===i?'<td class="t">T</td>':"<td>"+r.pts[i]+"</td>");
     h+="</tr>";
   });
   return h+"</table></div>";
@@ -229,12 +251,12 @@ function saveHist(){try{localStorage.setItem(KEY+"-hist",JSON.stringify(hist))}c
 function snapshot(){hist.push(JSON.stringify(S));if(hist.length>50)hist.shift();saveHist()}
 function undo(){
   if(!hist.length){return}
-  S=JSON.parse(hist.pop());sure=false;saveHist();save();render();
+  S=JSON.parse(hist.pop());if(S.limit)LIMIT=S.limit;sure=false;saveHist();save();render();
 }
 function newGame(){
   if(!sure){sure=true;render();setTimeout(function(){if(sure){sure=false;render()}},4000);return}
   sure=false;
-  var n=S.names.slice();S={screen:"setup",names:n};hist=[];saveHist();save();render();
+  var nm=S.names.slice(),c=S.names.length,l=S.limit||LIMIT,cu=!!S.custom;while(nm.length<4)nm.push("");S={screen:"setup",names:nm,n:c,limit:l,custom:cu};hist=[];saveHist();save();render();
 }
 render();
 </script>
@@ -286,7 +308,7 @@ if(viewer){
     v.winners=(v.winners||[]).map(Number);v.losers=(v.losers||[]).map(Number);
     v.scores=(v.scores||[0,0,0,0]).map(Number);v.outs=(v.outs||[0,0,0,0]).map(Number);
     v.used=(v.used||[false,false,false,false]).map(Boolean);
-    v.names=(v.names||[]).map(String);
+    v.names=(v.names||[]).map(String);v.limit=+v.limit||52;LIMIT=v.limit;
     S=v;render();
   });
 }
